@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const { username, password } = await req.json();
     const passwordHash = await hashPassword(password);
     
-    const users = (await getData<User[]>('users', 'users.json')) || [];
+    const users = (await getData<User[]>('users')) || [];
     const user = users.find(u => u.username === username && u.passwordHash === passwordHash);
     
     if (!user) {
