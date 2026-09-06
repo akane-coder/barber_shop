@@ -1,0 +1,17 @@
+[
+  {
+    "id": "admin-1",
+    "username": "admin",
+    "passwordHash": "fab78285e5f3224a356edb4b9dee7f2e311c52c4c9b6d66e294cde91d1750f05",
+    "role": "admin",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "user-1788710552871",
+    "username": "ильсур",
+    "passwordHash": "8f988c11e082902a0e650789f7d6e6d12c4e95e36faeed1a11aa4c5f067fa454",
+    "role": "user",
+    "barberId": "barber-1788637729175",
+    "createdAt": "2026-09-06T16:02:32.872Z"
+  }
+]
