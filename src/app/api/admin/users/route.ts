@@ -38,7 +38,7 @@ function getSession(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   if (!getSession(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const users = (await getData<User[]>('users', 'users.json')) || [];
+  const users = (await getData<User[]>('users')) || [];
   const safeUsers: SafeUser[] = users.map(({ passwordHash, ...rest }: User) => rest);
   return NextResponse.json(safeUsers);
 }
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Заполните все обязательные поля' }, { status: 400 });
     }
     
-    const users = (await getData<User[]>('users', 'users.json')) || [];
+    const users = (await getData<User[]>('users')) || [];
     if (users.some((u: User) => u.username === username)) {
       return NextResponse.json({ error: 'Пользователь с таким логином уже существует' }, { status: 400 });
     }
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     };
     
     users.push(newUser);
-    await setData('users', 'users.json', users);
+    await setData('users', 'users.json');
     
     const { passwordHash, ...safeUser } = newUser;
     return NextResponse.json({ success: true, user: safeUser });
@@ -83,10 +83,10 @@ export async function DELETE(req: NextRequest) {
     const userId = searchParams.get('id');
     if (!userId) return NextResponse.json({ error: 'ID не указан' }, { status: 400 });
     
-    let users = (await getData<User[]>('users', 'users.json')) || [];
+    let users = (await getData<User[]>('users')) || [];
     users = users.filter((u: User) => u.id !== userId);
     
-    await setData('users', 'users.json', users);
+    await setData('users', 'users.json');
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Ошибка удаления' }, { status: 500 });
