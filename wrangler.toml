@@ -1,7 +1,11 @@
 name = "barber-shop"
 compatibility_date = "2024-01-01"
+compatibility_flags = [ "nodejs_compat" ]
+
+# Указываем Cloudflare, где лежат собранные OpenNext файлы
+pages_build_output_dir = ".open-next/cloudflare"
 
 # KV хранилище для данных мастеров и сессий
-kv_namespaces = [
-  { binding = "BARBERSHOP_KV", id = "e20bde6901ab4f5e9fe2128b66bd4128" }
-]
+[[kv_namespaces]]
+binding = "BARBERSHOP_KV"
+id = "e20bde6901ab4f5e9fe2128b66bd4128"
