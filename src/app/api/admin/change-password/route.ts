@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Пароль должен быть минимум 4 символа' }, { status: 400 });
     }
 
-    const users = (await getData<User[]>('users', 'users.json')) || [];
+    const users = (await getData<User[]>('users')) || [];
     const userIndex = users.findIndex(u => u.id === sessionData.userId);
     
     if (userIndex === -1) return NextResponse.json({ error: 'Пользователь не найден' }, { status: 404 });
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     users[userIndex].passwordHash = await hashPassword(newPassword);
-    await setData('users', 'users.json', users);
+    await setData('users', users);
 
     return NextResponse.json({ success: true });
   } catch (error) {
