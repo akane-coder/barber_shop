@@ -4888,8 +4888,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/admin/analytics/page.js": {
-      "bytes": 24657,
+    ".open-next/server-functions/default/.next/server/app/admin/dashboard/page.js": {
+      "bytes": 30415,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4954,8 +4954,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/admin/dashboard/page.js": {
-      "bytes": 30415,
+    ".open-next/server-functions/default/.next/server/app/admin/analytics/page.js": {
+      "bytes": 24657,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -6119,14 +6119,14 @@
           "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\users\\route.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/admin/analytics/page.js",
-          "kind": "require-call",
-          "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\admin\\analytics\\page.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/admin/dashboard/page.js",
           "kind": "require-call",
           "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\admin\\dashboard\\page.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/admin/analytics/page.js",
+          "kind": "require-call",
+          "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\admin\\analytics\\page.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/admin/portfolio/page.js",
@@ -8662,11 +8662,11 @@
         ".open-next/server-functions/default/.next/server/app/api/admin/users/route.js": {
           "bytesInOutput": 9351
         },
-        ".open-next/server-functions/default/.next/server/app/admin/analytics/page.js": {
-          "bytesInOutput": 26258
-        },
         ".open-next/server-functions/default/.next/server/app/admin/dashboard/page.js": {
           "bytesInOutput": 36168
+        },
+        ".open-next/server-functions/default/.next/server/app/admin/analytics/page.js": {
+          "bytesInOutput": 26258
         },
         ".open-next/server-functions/default/.next/server/app/admin/portfolio/page.js": {
           "bytesInOutput": 27249
