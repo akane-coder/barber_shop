@@ -1,6 +1,6 @@
-name = "barber-shop"
-main = ".open-next/worker.js"
-compatibility_date = "2024-12-01"
+name = "barber-shop" # Или "dzyadushka-ru", как у тебя назван проект в CF
+compatibility_date = "2024-12-30"
+compatibility_flags = ["nodejs_compat"] # <--- ВОТ ЭТО ГЛАВНОЕ ИСПРАВЛЕНИЕ
 
 [assets]
 directory = ".open-next/assets"
