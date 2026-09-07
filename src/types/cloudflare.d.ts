@@ -1,11 +1,13 @@
-// src/types/cloudflare-env.d.ts
+import { KVNamespace } from "@cloudflare/workers-types";
+
 export interface CloudflareEnv {
   BARBERSHOP_KV: KVNamespace;
   ASSETS: Fetcher;
 }
 
-declare global {
-  var BARBERSHOP_KV: KVNamespace;
+declare module "@opennextjs/cloudflare" {
+  export function getCloudflareContext(): {
+    env: CloudflareEnv;
+    ctx: any;
+  };
 }
-
-export {};

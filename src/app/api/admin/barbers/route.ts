@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (index !== -1) currentBarbers[index] = barber;
     else currentBarbers.push(barber);
     
-    await setData('barbers_data', 'barbers.json');
+    await setData('barbers_data', currentBarbers);
     return NextResponse.json({ success: true, data: currentBarbers });
   } catch (error) {
     return NextResponse.json({ error: 'Ошибка сохранения данных' }, { status: 500 });
@@ -42,7 +42,7 @@ export async function DELETE(req: NextRequest) {
     const currentBarbers = (await getData<Barber[]>('barbers_data')) || [];
     const filtered = currentBarbers.filter(b => b.id !== id);
     
-    await setData('barbers_data', 'barbers.json');
+    await setData('barbers_data', filtered)
     return NextResponse.json({ success: true, data: filtered });
   } catch (error) {
     return NextResponse.json({ error: 'Ошибка удаления' }, { status: 500 });

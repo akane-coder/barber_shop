@@ -211,9 +211,7 @@ function resolveCdnInvalidation(value = "dummy") {
 }
 
 // open-next.config.ts
-var open_next_config_default = defineCloudflareConfig({
-  // Пустой конфиг - KV настраивается через wrangler.toml
-});
+var open_next_config_default = defineCloudflareConfig({});
 export {
   open_next_config_default as default
 };

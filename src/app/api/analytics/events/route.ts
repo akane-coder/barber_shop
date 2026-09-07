@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { getData, setData } from '@/lib/kv';
 
 interface AnalyticsEvent {
   id: string;
@@ -24,56 +23,55 @@ interface AnalyticsData {
   last_updated: string;
 }
 
-const ANALYTICS_PATH = path.join(process.cwd(), 'data', 'analytics.json');
-
-async function loadAnalytics(): Promise<AnalyticsData> {
-  try {
-    const data = await fs.readFile(ANALYTICS_PATH, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return { events: [], last_updated: new Date().toISOString() };
-  }
-}
-
-async function saveAnalytics(data: AnalyticsData): Promise<void> {
-  await fs.writeFile(ANALYTICS_PATH, JSON.stringify(data, null, 2));
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const event: Omit<AnalyticsEvent, 'id' | 'timestamp'> = await req.json();
-    
-    const analytics = await loadAnalytics();
-    
-    const newEvent: AnalyticsEvent = {
-      id: `evt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      ...event,
+    const eventData: Omit<AnalyticsEvent, 'id' | 'timestamp'> = await req.json();
+
+    // 1. Получаем текущие данные (или создаем пустые, если их нет)
+    const currentData = (await getData<AnalyticsData>('analytics_data')) || {
+      events: [],
+      last_updated: new Date().toISOString(),
     };
-    
-    analytics.events.push(newEvent);
-    analytics.last_updated = new Date().toISOString();
-    
-    // Храним только последние 10000 событий (чтобы файл не разросся)
-    if (analytics.events.length > 10000) {
-      analytics.events = analytics.events.slice(-10000);
+
+    // 2. Формируем новое событие
+    const newEvent: AnalyticsEvent = {
+      id: `evt-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
+      timestamp: new Date().toISOString(),
+      ...eventData,
+    };
+
+    // 3. Добавляем событие в массив
+    currentData.events.push(newEvent);
+    currentData.last_updated = new Date().toISOString();
+
+    // 4. ВАЖНО: Храним только последние 10 000 событий, 
+    // чтобы не превысить лимиты размера KV (128 КБ на ключ) и не замедлять чтение
+    if (currentData.events.length > 10000) {
+      currentData.events = currentData.events.slice(-10000);
     }
-    
-    await saveAnalytics(analytics);
-    
+
+    // 5. Сохраняем обратно (в Cloudflare KV или локально в fs)
+    await setData('analytics_data', currentData);
+
     return NextResponse.json({ success: true, event_id: newEvent.id });
   } catch (error) {
-    console.error('Analytics error:', error);
+    console.error('Analytics POST error:', error);
     return NextResponse.json({ error: 'Failed to save event' }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const analytics = await loadAnalytics();
-    return NextResponse.json(analytics);
+    // Получаем данные для отладки или админки
+    const data = await getData<AnalyticsData>('analytics_data');
+    
+    if (!data) {
+      return NextResponse.json({ events: [], last_updated: null });
+    }
+
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Analytics read error:', error);
-    return NextResponse.json({ events: [], last_updated: null });
+    console.error('Analytics GET error:', error);
+    return NextResponse.json({ error: 'Failed to load analytics' }, { status: 500 });
   }
 }

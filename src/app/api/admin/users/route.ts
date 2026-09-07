@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     };
     
     users.push(newUser);
-    await setData('users', 'users.json');
+    await setData('users', users);
     
     const { passwordHash, ...safeUser } = newUser;
     return NextResponse.json({ success: true, user: safeUser });
@@ -86,7 +86,7 @@ export async function DELETE(req: NextRequest) {
     let users = (await getData<User[]>('users')) || [];
     users = users.filter((u: User) => u.id !== userId);
     
-    await setData('users', 'users.json');
+    await setData('users', users);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Ошибка удаления' }, { status: 500 });
