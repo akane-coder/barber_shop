@@ -1,10 +1,7 @@
-name = "barber-shop"  # Как в Cloudflare Dashboard
-compatibility_date = "2024-09-23"
+name = "barber-shop" # Или "dzyadushka-ru", как ты его называл
+compatibility_date = "2024-09-23" # Критически важно для работы Node.js модулей в Cloudflare
+compatibility_flags = ["nodejs_compat"]
 
-# KV хранилище
 kv_namespaces = [
   { binding = "BARBERSHOP_KV", id = "e20bde6901ab4f5e9fe2128b66bd4128" }
 ]
-
-[site]
-bucket = ".open-next/cloudflare"
