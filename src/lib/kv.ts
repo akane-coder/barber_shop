@@ -6,10 +6,13 @@ export async function getData<T>(key: string): Promise<T | null> {
     // @ts-ignore - BARBERSHOP_KV доступен через binding
     const kv = env.BARBERSHOP_KV;
     
-    if (kv && typeof kv.get === 'function') {
-      const data = await kv.get(key, 'json');
-      if (data) return data as T;
+    if (!kv) {
+      console.error('❌ KV binding не найден');
+      return null;
     }
+    
+    const data = await kv.get(key, 'json');
+    if (data) return data as T;
     return null;
   } catch (error) {
     console.error("❌ KV read error:", error);
@@ -23,10 +26,18 @@ export async function setData<T>(key: string, data: T): Promise<void> {
     // @ts-ignore - BARBERSHOP_KV доступен через binding
     const kv = env.BARBERSHOP_KV;
     
-    if (kv && typeof kv.put === 'function') {
-      await kv.put(key, JSON.stringify(data));
+    if (!kv) {
+      console.error('❌ KV binding не найден');
+      throw new Error('KV binding не доступен');
     }
+    
+    const jsonString = JSON.stringify(data);
+    console.log(' Сохраняем в KV:', key, 'размер:', jsonString.length, 'байт');
+    
+    await kv.put(key, jsonString);
+    console.log('✅ Успешно сохранено в KV');
   } catch (error) {
     console.error("❌ KV write error:", error);
+    throw error; // Пробрасываем ошибку дальше
   }
 }
