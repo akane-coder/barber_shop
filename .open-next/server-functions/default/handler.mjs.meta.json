@@ -4062,7 +4062,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-      "bytes": 7003,
+      "bytes": 9070,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4088,16 +4088,6 @@
           "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-async-storage.external.js",
           "kind": "require-call",
           "original": "next/dist/server/app-render/work-async-storage.external.js"
-        },
-        {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": "fs/promises",
-          "kind": "require-call",
-          "external": true
         },
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
@@ -7333,16 +7323,6 @@
           "external": true
         },
         {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": "fs/promises",
-          "kind": "require-call",
-          "external": true
-        },
-        {
           "path": "node:perf_hooks",
           "kind": "require-call",
           "external": true
@@ -8537,7 +8517,7 @@
           "bytesInOutput": 9831
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-          "bytesInOutput": 7122
+          "bytesInOutput": 9544
         },
         ".open-next/server-functions/default/.next/server/app/api/parse-yclients-html/route.js": {
           "bytesInOutput": 1423308
@@ -8771,7 +8751,7 @@
           "bytesInOutput": 63297
         }
       },
-      "bytes": 4823130
+      "bytes": 4825552
     }
   }
 }
