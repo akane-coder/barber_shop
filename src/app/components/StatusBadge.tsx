@@ -23,12 +23,18 @@ export default function StatusBadge({ status, lastUpdated }: StatusBadgeProps) {
           description: 'Окна сегодня, но позже',
         };
       case MasterLoadStatus.TOMORROW:
-      case MasterLoadStatus.IN_2_DAYS:
         return {
           color: 'bg-blue-500',
           pulse: false,
           label: 'Есть завтра',
           description: 'Запись на завтра',
+        };
+      case MasterLoadStatus.IN_2_DAYS: // ✅ ИСПРАВЛЕНО: отдельный кейс для послезавтра
+        return {
+          color: 'bg-indigo-500',
+          pulse: false,
+          label: 'Есть послезавтра',
+          description: 'Запись через 2 дня',
         };
       case MasterLoadStatus.IN_3_4_DAYS:
         return {
