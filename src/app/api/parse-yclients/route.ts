@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
-import { getData } from '@/lib/kv';
+import { getData, setData } from '@/lib/kv';
+import { Barber } from '@/types';
 
 const ORGANIZATION_ID = 262700;
 const YCLIENTS_BASE_URL = 'https://platform.yclients.com';
@@ -160,18 +159,19 @@ function calculateMasterStatus(slots: TimeSlot[]): string {
 export async function POST(req: NextRequest) {
   try {
     const { staffIds, syncAll } = await req.json();
+    console.log('📥 Parse request:', { staffIds, syncAll });
 
     let idsToSync: number[] = staffIds || [];
 
-        if (syncAll) {
+    if (syncAll) {
       try {
-        // ЧИТАЕМ ИЗ KV, А НЕ ИЗ ФАЙЛА, ТАК КАК АДМИНКА СОХРАНЯЕТ ТУДА
-        const barbers = await getData<any[]>('barbers_data');
+        // ЧИТАЕМ ИЗ KV ВМЕСТО ФАЙЛА
+        const barbers = await getData<Barber[]>('barbers_data');
         const safeBarbers = Array.isArray(barbers) ? barbers : [];
         
         idsToSync = safeBarbers
-          .filter((b: any) => b.is_active && b.yclients_staff_id)
-          .map((b: any) => b.yclients_staff_id);
+          .filter((b) => b.is_active && b.yclients_staff_id)
+          .map((b) => b.yclients_staff_id);
           
         console.log(`🔄 Syncing ${idsToSync.length} active masters from KV:`, idsToSync);
       } catch (err) {
@@ -180,6 +180,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!Array.isArray(idsToSync) || idsToSync.length === 0) {
+      console.warn('⚠️ No staff IDs to sync');
       return NextResponse.json({ error: 'No staff IDs to sync' }, { status: 400 });
     }
 
@@ -204,21 +205,33 @@ export async function POST(req: NextRequest) {
       idsToSync.map(async (staffId) => {
         console.log(`\n👤 Processing staff ${staffId}...`);
 
-        // Запрашиваем слоты на 4 дня вперёд
-        const { slots, firstAvailableDate } = await fetchMasterSlotsMultiDay(staffId, 4);
-        
-        const bookableSlots = slots.filter(s => s.is_bookable);
-        const status = bookableSlots.length > 0 ? calculateMasterStatus(slots) : 'FULLY_BOOKED';
+        try {
+          // Запрашиваем слоты на 4 дня вперёд
+          const { slots, firstAvailableDate } = await fetchMasterSlotsMultiDay(staffId, 4);
+          
+          const bookableSlots = slots.filter(s => s.is_bookable);
+          const status = bookableSlots.length > 0 ? calculateMasterStatus(slots) : 'FULLY_BOOKED';
 
-        console.log(`✅ Success: ${bookableSlots.length} bookable slots, first available: ${firstAvailableDate || 'none'}, status: ${status}`);
+          console.log(`✅ Success: ${bookableSlots.length} bookable slots, first available: ${firstAvailableDate || 'none'}, status: ${status}`);
 
-        return {
-          staff_id: staffId,
-          status,
-          slots_count: bookableSlots.length,
-          next_available: firstAvailableDate,
-          source: 'api' as const,
-        };
+          return {
+            staff_id: staffId,
+            status,
+            slots_count: bookableSlots.length,
+            next_available: firstAvailableDate,
+            source: 'api' as const,
+          };
+        } catch (error) {
+          console.error(` Error processing staff ${staffId}:`, error);
+          return {
+            staff_id: staffId,
+            status: null,
+            slots_count: 0,
+            next_available: null,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            source: 'unknown' as const,
+          };
+        }
       })
     );
 
@@ -233,12 +246,12 @@ export async function POST(req: NextRequest) {
       errors: results.filter(r => r.error).map(r => ({ staff_id: r.staff_id, error: r.error })),
     };
 
+    // СОХРАНЯЕМ КЭШ В KV ВМЕСТО ФАЙЛА
     try {
-      const cachePath = path.join(process.cwd(), 'data', 'parsed-statuses.json');
-      await fs.writeFile(cachePath, JSON.stringify(cacheData, null, 2));
-      console.log('💾 Cached statuses saved');
+      await setData('parsed_statuses_cache', cacheData);
+      console.log('💾 Cached statuses saved to KV');
     } catch (err) {
-      console.error('❌ Error saving cache:', err);
+      console.error('❌ Error saving cache to KV:', err);
     }
 
     console.log('\n✅ Sync completed!');
@@ -254,15 +267,18 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('❌ Error in parse-yclients:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : String(error)
+    }, { status: 500 });
   }
 }
 
 export async function GET() {
   try {
-    const cachePath = path.join(process.cwd(), 'data', 'parsed-statuses.json');
-    const cacheData = await fs.readFile(cachePath, 'utf-8');
-    const parsed = JSON.parse(cacheData);
+    // ЧИТАЕМ КЭШ ИЗ KV ВМЕСТО ФАЙЛА
+    const cacheData = await getData<any>('parsed_statuses_cache');
+    const parsed = cacheData || { statuses: {}, timestamp: null, errors: [] };
 
     return NextResponse.json({
       message: 'YClients Parser API',
@@ -272,7 +288,8 @@ export async function GET() {
       errors: parsed.errors || [],
       has_token: !!API_TOKEN,
     });
-  } catch {
+  } catch (error) {
+    console.error('❌ Error reading cache:', error);
     return NextResponse.json({
       message: 'YClients Parser API',
       organization_id: ORGANIZATION_ID,

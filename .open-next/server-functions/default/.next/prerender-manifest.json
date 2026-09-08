@@ -55,30 +55,6 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/admin": {
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        }
-      ],
-      "initialRevalidateSeconds": false,
-      "srcRoute": "/admin",
-      "dataRoute": "/admin.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
     "/admin/users": {
       "experimentalBypassFor": [
         {
@@ -127,7 +103,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/admin/barbers/new": {
+    "/": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -140,8 +116,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/barbers/new",
-      "dataRoute": "/admin/barbers/new.rsc",
+      "srcRoute": "/",
+      "dataRoute": "/index.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -175,7 +151,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/admin/portfolio": {
+    "/admin/barbers/new": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -188,8 +164,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/portfolio",
-      "dataRoute": "/admin/portfolio.rsc",
+      "srcRoute": "/admin/barbers/new",
+      "dataRoute": "/admin/barbers/new.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -199,7 +175,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/admin/login": {
+    "/admin": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -212,8 +188,8 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/admin/login",
-      "dataRoute": "/admin/login.rsc",
+      "srcRoute": "/admin",
+      "dataRoute": "/admin.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -247,7 +223,7 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/": {
+    "/admin/login": {
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -260,8 +236,32 @@
         }
       ],
       "initialRevalidateSeconds": false,
-      "srcRoute": "/",
-      "dataRoute": "/index.rsc",
+      "srcRoute": "/admin/login",
+      "dataRoute": "/admin/login.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/admin/portfolio": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/admin/portfolio",
+      "dataRoute": "/admin/portfolio.rsc",
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -301,8 +301,8 @@
   },
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "a5ed6d4acc2ab310f986ea8f2832233e",
-    "previewModeSigningKey": "1a8cefd964a90cd71c7370bafce29c5d6c00d2a66e0b1157ccbcbd97e8f65687",
-    "previewModeEncryptionKey": "0e579a650282d91f7886592f396f21bedff9f6f3afb4c6b84862bc9957a1fa46"
+    "previewModeId": "973b7cc855355aaf0b67a3c1e9be7f08",
+    "previewModeSigningKey": "4263914a38ed714dbb604f6fe64fd8251681d0db3815f91cbe57cc8426977625",
+    "previewModeEncryptionKey": "90a70642f5eef47319401ad4f7d883f37b9838ef7399a0b7cca4600dbc051ad6"
   }
 }

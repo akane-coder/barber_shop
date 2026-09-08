@@ -16,7 +16,8 @@ export async function POST(req: NextRequest) {
   }
   
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+    // На Cloudflare Workers используем относительный URL
+    const baseUrl = req.headers.get('origin') || 'https://barber-shop.a-kane18903.workers.dev';
     const res = await fetch(`${baseUrl}/api/parse-yclients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -4062,7 +4062,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-      "bytes": 7038,
+      "bytes": 7003,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4095,6 +4095,11 @@
           "external": true
         },
         {
+          "path": "fs/promises",
+          "kind": "require-call",
+          "external": true
+        },
+        {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
           "kind": "require-call",
           "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
@@ -4103,11 +4108,6 @@
           "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
           "kind": "require-call",
           "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": "fs/promises",
-          "kind": "require-call",
-          "external": true
         },
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
@@ -4477,7 +4477,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/admin/sync-all/route.js": {
-      "bytes": 7388,
+      "bytes": 7401,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4528,7 +4528,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/parse-yclients/route.js": {
-      "bytes": 13159,
+      "bytes": 13339,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4556,11 +4556,6 @@
           "original": "next/dist/server/app-render/work-async-storage.external.js"
         },
         {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
           "path": ".open-next/server-functions/default/node_modules/next/dist/compiled/next-server/app-route.runtime.prod.js",
           "kind": "require-call",
           "original": "next/dist/compiled/next-server/app-route.runtime.prod.js"
@@ -4569,11 +4564,6 @@
           "path": ".open-next/server-functions/default/node_modules/next/dist/server/app-render/work-unit-async-storage.external.js",
           "kind": "require-call",
           "original": "next/dist/server/app-render/work-unit-async-storage.external.js"
-        },
-        {
-          "path": "fs/promises",
-          "kind": "require-call",
-          "external": true
         },
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/no-fallback-error.external.js",
@@ -7498,16 +7488,6 @@
           "external": true
         },
         {
-          "path": "path",
-          "kind": "require-call",
-          "external": true
-        },
-        {
-          "path": "fs/promises",
-          "kind": "require-call",
-          "external": true
-        },
-        {
           "path": "util",
           "kind": "require-call",
           "external": true
@@ -8557,7 +8537,7 @@
           "bytesInOutput": 9831
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-          "bytesInOutput": 7160
+          "bytesInOutput": 7122
         },
         ".open-next/server-functions/default/.next/server/app/api/parse-yclients-html/route.js": {
           "bytesInOutput": 1423308
@@ -8572,10 +8552,10 @@
           "bytesInOutput": 10526
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/sync-all/route.js": {
-          "bytesInOutput": 7491
+          "bytesInOutput": 7505
         },
         ".open-next/server-functions/default/.next/server/app/api/parse-yclients/route.js": {
-          "bytesInOutput": 13818
+          "bytesInOutput": 13980
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/barbers/route.js": {
           "bytesInOutput": 11170
@@ -8791,7 +8771,7 @@
           "bytesInOutput": 63297
         }
       },
-      "bytes": 4822992
+      "bytes": 4823130
     }
   }
 }
