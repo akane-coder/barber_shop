@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 import { Barber, MasterLoadStatus } from '@/types';
+import { getData, setData } from '@/lib/kv';
 
 function getSession(req: NextRequest) {
   const cookie = req.cookies.get('admin_session');
@@ -24,12 +23,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'barberId is required' }, { status: 400 });
     }
 
-    let barbers: Barber[] = [];
-    const localPath = path.join(process.cwd(), 'data', 'barbers.json');
-    try {
-      const data = await fs.readFile(localPath, 'utf-8');
-      barbers = JSON.parse(data);
-    } catch {
+    let barbers = await getData<Barber[]>('barbers_data');
+    if (!Array.isArray(barbers)) {
       barbers = [];
     }
 
@@ -43,7 +38,7 @@ export async function POST(req: NextRequest) {
       return b;
     });
 
-    await fs.writeFile(localPath, JSON.stringify(updatedBarbers, null, 2));
+    await setData('barbers_data', updatedBarbers);
     return NextResponse.json({ success: true, data: updatedBarbers });
   } catch (error) {
     console.error('Override error:', error);

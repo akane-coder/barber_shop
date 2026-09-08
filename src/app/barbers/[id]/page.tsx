@@ -3,26 +3,25 @@ import { AVAILABLE_SERVICES } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import fs from 'fs/promises';
-import path from 'path';
+import { getData } from '@/lib/kv';
 
 const YCLIENTS_COMPANY_ID = 262700;
 const YCLIENTS_BASE_URL = `https://b270235.yclients.com/company/${YCLIENTS_COMPANY_ID}`;
 
-// Получение данных из локального JSON (fallback для разработки)
-async function getLocalBarbers(): Promise<Barber[]> {
+// Получение данных из KV
+async function getBarbersFromKV(): Promise<Barber[]> {
   try {
-    const localPath = path.join(process.cwd(), 'data', 'barbers.json');
-    const data = await fs.readFile(localPath, 'utf-8');
-    return JSON.parse(data);
-  } catch {
+    const barbers = await getData<Barber[]>('barbers_data');
+    return Array.isArray(barbers) ? barbers : [];
+  } catch (error) {
+    console.error('Error reading barbers from KV:', error);
     return [];
   }
 }
 
 // Генерация статических путей для всех активных мастеров
 export async function generateStaticParams() {
-  const barbers = await getLocalBarbers();
+  const barbers = await getBarbersFromKV();
   return barbers
     .filter((b) => b.is_active)
     .map((barber) => ({ id: barber.id }));
@@ -32,19 +31,7 @@ export async function generateStaticParams() {
 export default async function BarberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  let barbers: Barber[] = [];
-  try {
-    // @ts-ignore
-    const kv = (globalThis as any).BARBERSHOP_KV;
-    if (kv) {
-      barbers = (await kv.get('barbers_data', 'json')) || [];
-    } else {
-      barbers = await getLocalBarbers();
-    }
-  } catch {
-    barbers = await getLocalBarbers();
-  }
-
+  const barbers = await getBarbersFromKV();
   const barber = barbers.find((b) => b.id === id);
 
   if (!barber || !barber.is_active) {
