@@ -96,22 +96,46 @@ async function fetchMasterSlotsMultiDay(staffId: number, daysCount: number = 4):
 }
 
 function calculateMasterStatus(slots: TimeSlot[]): string {
+  // ✅ ПРАВИЛЬНОЕ ПОЛУЧЕНИЕ ВРЕМЕНИ МИНСКА (UTC+3)
   const now = new Date();
-  const minskTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Minsk' }));
+  const minskOffset = 3 * 60 * 60 * 1000; // 3 часа в миллисекундах
+  const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+  const minskTime = new Date(utcTime + minskOffset);
+  
   const nowPlus2Hours = new Date(minskTime.getTime() + 2 * 60 * 60 * 1000);
+  
+  // Начало и конец сегодняшнего дня в Минске
+  const todayStart = new Date(minskTime);
+  todayStart.setHours(0, 0, 0, 0);
   const todayEnd = new Date(minskTime);
   todayEnd.setHours(23, 59, 59, 999);
-  const tomorrow = new Date(minskTime);
+  
+  // Завтра
+  const tomorrow = new Date(todayEnd);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
   const tomorrowEnd = new Date(tomorrow);
   tomorrowEnd.setHours(23, 59, 59, 999);
-  const in2Days = new Date(tomorrow);
+  
+  // Послезавтра
+  const in2Days = new Date(tomorrowEnd);
   in2Days.setDate(in2Days.getDate() + 1);
-  const in3Days = new Date(in2Days);
+  in2Days.setHours(0, 0, 0, 0);
+  const in2DaysEnd = new Date(in2Days);
+  in2DaysEnd.setHours(23, 59, 59, 999);
+  
+  // 3-4 дня
+  const in3Days = new Date(in2DaysEnd);
   in3Days.setDate(in3Days.getDate() + 1);
-  const in4Days = new Date(in3Days);
-  in4Days.setDate(in4Days.getDate() + 1);
+  in3Days.setHours(0, 0, 0, 0);
+  const in4DaysEnd = new Date(in3Days);
+  in4DaysEnd.setDate(in4DaysEnd.getDate() + 1);
+  in4DaysEnd.setHours(23, 59, 59, 999);
+  
+  console.log('🕐 Время Минска:', minskTime.toISOString());
+  console.log(' Сегодня:', todayStart.toISOString(), '-', todayEnd.toISOString());
+  console.log('📅 Завтра:', tomorrow.toISOString(), '-', tomorrowEnd.toISOString());
+  console.log('📅 Послезавтра:', in2Days.toISOString(), '-', in2DaysEnd.toISOString());
   
   let hasSlotToday = false;
   let hasSlotTomorrow = false;
@@ -123,20 +147,32 @@ function calculateMasterStatus(slots: TimeSlot[]): string {
     
     const slotTime = new Date(slot.datetime);
     
+    console.log(`🔍 Слот: ${slot.datetime} -> ${slotTime.toISOString()}`);
+    
+    // Если слот в ближайшие 2 часа
     if (slotTime >= minskTime && slotTime <= nowPlus2Hours) {
+      console.log('✅ IMMEDIATE');
       return 'IMMEDIATE';
     }
-    if (slotTime >= minskTime && slotTime <= todayEnd) {
+    // Сегодня
+    if (slotTime >= todayStart && slotTime <= todayEnd) {
       hasSlotToday = true;
+      console.log(' TODAY slot found');
     }
+    // Завтра
     if (slotTime >= tomorrow && slotTime <= tomorrowEnd) {
       hasSlotTomorrow = true;
+      console.log(' TOMORROW slot found');
     }
-    if (slotTime >= in2Days && slotTime < in3Days) {
+    // Послезавтра
+    if (slotTime >= in2Days && slotTime <= in2DaysEnd) {
       hasSlotIn2Days = true;
+      console.log('📌 IN_2_DAYS slot found');
     }
-    if (slotTime >= in3Days && slotTime < in4Days) {
+    // 3-4 дня
+    if (slotTime >= in3Days && slotTime <= in4DaysEnd) {
       hasSlotIn3_4Days = true;
+      console.log('📌 IN_3_4_DAYS slot found');
     }
   }
   
