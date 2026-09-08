@@ -16,19 +16,17 @@ export async function POST(req: NextRequest) {
   }
   
   try {
-    // На Cloudflare Workers используем относительный URL
-    const host = req.headers.get('host') || 'barber-shop.a-kane18903.workers.dev';
-    const protocol = 'https';
-    const baseUrl = `${protocol}://${host}`;
-    const res = await fetch(`${baseUrl}/api/parse-yclients`, {
+    // ИСПОЛЬЗУЕМ ОТНОСИТЕЛЬНЫЙ ПУТЬ для Cloudflare Workers
+    const res = await fetch(new URL('/api/parse-yclients', req.url), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ syncAll: true }),
     });
     
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error || 'Parser failed');
+      const errorText = await res.text();
+      console.error('❌ Parse error response:', errorText);
+      throw new Error(errorText || 'Parser failed');
     }
     
     const data = await res.json();
@@ -41,7 +39,10 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('❌ Sync all error:', error);
     return NextResponse.json(
-      { error: 'Failed to sync statuses', details: error instanceof Error ? error.message : 'Unknown' },
+      { 
+        error: 'Failed to sync statuses', 
+        details: error instanceof Error ? error.message : 'Unknown' 
+      },
       { status: 500 }
     );
   }
