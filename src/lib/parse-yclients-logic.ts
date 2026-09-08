@@ -132,10 +132,10 @@ function calculateMasterStatus(slots: TimeSlot[]): string {
   in4DaysEnd.setDate(in4DaysEnd.getDate() + 1);
   in4DaysEnd.setHours(23, 59, 59, 999);
   
-  console.log('🕐 Время Минска:', minskTime.toISOString());
+  console.log(' Время Минска:', minskTime.toISOString());
   console.log('📅 Сегодня:', todayStart.toISOString(), '-', todayEnd.toISOString());
   console.log('📅 Завтра:', tomorrow.toISOString(), '-', tomorrowEnd.toISOString());
-  console.log(' Послезавтра:', in2Days.toISOString(), '-', in2DaysEnd.toISOString());
+  console.log('📅 Послезавтра:', in2Days.toISOString(), '-', in2DaysEnd.toISOString());
   
   let hasSlotToday = false;
   let hasSlotTomorrow = false;
@@ -145,38 +145,34 @@ function calculateMasterStatus(slots: TimeSlot[]): string {
   for (const slot of slots) {
     if (!slot.is_bookable) continue;
     
-    // ✅ КОНВЕРТИРУЕМ ВРЕМЯ СЛОТА В МИНСКОЕ ВРЕМЯ
-    // YClients возвращает время без timezone, считаем что это время Минска
-    const slotDateUTC = new Date(slot.datetime);
+    // ✅ ПРАВИЛЬНАЯ КОНВЕРТАЦИЯ: YClients возвращает время в Минске без timezone
+    // Добавляем +03:00 чтобы JavaScript правильно интерпретировал
+    const slotTime = new Date(`${slot.datetime}+03:00`);
     
-    // Если в datetime нет timezone info, YClients отправляет время в Минске
-    // Но Cloudflare парсит как UTC, поэтому нужно добавить +3 часа
-    const slotTimeInMinsk = new Date(slotDateUTC.getTime() + minskOffset);
-    
-    console.log(`🔍 Слот: ${slot.datetime} | UTC: ${slotDateUTC.toISOString()} | Минск: ${slotTimeInMinsk.toISOString()}`);
+    console.log(`🔍 Слот: ${slot.datetime} -> ${slotTime.toISOString()} (Минск: ${slotTime.toLocaleString('ru-RU', { timeZone: 'Europe/Minsk' })})`);
     
     // Если слот в ближайшие 2 часа
-    if (slotTimeInMinsk >= minskTime && slotTimeInMinsk <= nowPlus2Hours) {
+    if (slotTime >= minskTime && slotTime <= nowPlus2Hours) {
       console.log('✅ IMMEDIATE');
       return 'IMMEDIATE';
     }
     // Сегодня
-    if (slotTimeInMinsk >= todayStart && slotTimeInMinsk <= todayEnd) {
+    if (slotTime >= todayStart && slotTime <= todayEnd) {
       hasSlotToday = true;
       console.log('📅 TODAY slot found');
     }
     // Завтра
-    if (slotTimeInMinsk >= tomorrow && slotTimeInMinsk <= tomorrowEnd) {
+    if (slotTime >= tomorrow && slotTime <= tomorrowEnd) {
       hasSlotTomorrow = true;
       console.log('📅 TOMORROW slot found');
     }
     // Послезавтра
-    if (slotTimeInMinsk >= in2Days && slotTimeInMinsk <= in2DaysEnd) {
+    if (slotTime >= in2Days && slotTime <= in2DaysEnd) {
       hasSlotIn2Days = true;
-      console.log(' IN_2_DAYS slot found');
+      console.log('📅 IN_2_DAYS slot found');
     }
     // 3-4 дня
-    if (slotTimeInMinsk >= in3Days && slotTimeInMinsk <= in4DaysEnd) {
+    if (slotTime >= in3Days && slotTime <= in4DaysEnd) {
       hasSlotIn3_4Days = true;
       console.log('📅 IN_3_4_DAYS slot found');
     }
