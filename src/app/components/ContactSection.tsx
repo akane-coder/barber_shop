@@ -30,7 +30,7 @@ export default function ContactSection() {
             <div>
               <h3 className="text-xl font-semibold text-white mb-2">Соцсети</h3>
               <div className="flex gap-4">
-                <a href="https://www.instagram.com/bobruisk_uncle/" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <a href="https://www.instagram.com/bobruisk_uncle?stkn=MXMyaGN3OTgwNzY3NQ==" className="text-gray-400 hover:text-blue-400 transition-colors">
                   Instagram
                 </a>
                 <a href="https://vk.com/bobruisk_uncle" className="text-gray-400 hover:text-blue-400 transition-colors">

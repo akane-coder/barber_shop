@@ -67,12 +67,21 @@ async function fetchSlotsForDate(staffId: number, date: string): Promise<TimeSlo
 async function fetchMasterSlotsMultiDay(staffId: number, daysCount: number = 4): Promise<{ slots: TimeSlot[]; firstAvailableDate: string | null }> {
   const allSlots: TimeSlot[] = [];
   let firstAvailableDate: string | null = null;
-  const today = new Date();
+  
+  // ✅ ИСПОЛЬЗУЕМ ВРЕМЯ МИНСКА ВМЕСТО UTC
+  const now = new Date();
+  const minskTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Minsk' }));
   
   for (let i = 0; i < daysCount; i++) {
-    const date = new Date(today);
+    const date = new Date(minskTime);
     date.setDate(date.getDate() + i);
-    const dateStr = date.toISOString().split('T')[0];
+    
+    // ✅ ФОРМАТИРУЕМ ДАТУ В МИНСКОМ ВРЕМЕНИ
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
     const daySlots = await fetchSlotsForDate(staffId, dateStr);
     const bookableSlots = daySlots.filter(s => s.is_bookable);
     
