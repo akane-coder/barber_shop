@@ -3,6 +3,7 @@
     switch (d) {
        case 331: b(require("./chunks/331.js")); break;
        case 552: b(require("./chunks/552.js")); break;
+       case 610: b(require("./chunks/610.js")); break;
        case 611: b(require("./chunks/611.js")); break;
        case 63: b(require("./chunks/63.js")); break;
        case 692: b(require("./chunks/692.js")); break;

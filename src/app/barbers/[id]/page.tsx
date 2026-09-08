@@ -27,13 +27,16 @@ export async function generateStaticParams() {
     .map((barber) => ({ id: barber.id }));
 }
 
+// Отключаем статическую генерацию для динамических данных
+export const dynamic = 'force-dynamic';
+
 // Server Component — params это Promise в Next.js 15+
 export default async function BarberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-
   const barbers = await getBarbersFromKV();
+  
   const barber = barbers.find((b) => b.id === id);
-
+  
   if (!barber || !barber.is_active) {
     notFound();
   }
@@ -94,9 +97,11 @@ export default async function BarberPage({ params }: { params: Promise<{ id: str
               )}
             </div>
           </div>
+
           <div className="md:col-span-2 flex flex-col justify-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-2">{barber.name}</h1>
             <p className="text-xl text-blue-400 mb-4">{barber.role}</p>
+
             {/* Рейтинг */}
             {(barber.rating || 0) > 0 && (
               <div className="flex items-center gap-2 mb-4">
@@ -113,6 +118,7 @@ export default async function BarberPage({ params }: { params: Promise<{ id: str
                 </span>
               </div>
             )}
+
             {/* Специализации */}
             {barber.specializations.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
@@ -126,6 +132,7 @@ export default async function BarberPage({ params }: { params: Promise<{ id: str
                 ))}
               </div>
             )}
+
             {/* Био */}
             <p className="text-gray-300 leading-relaxed text-lg whitespace-pre-line">
               {barber.bio || 'Описание мастера скоро будет добавлено.'}

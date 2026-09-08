@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { runParseYclients } from '@/lib/parse-yclients-logic';
 
 function getSession(req: NextRequest) {
   const cookie = req.cookies.get('admin_session');
@@ -16,28 +17,19 @@ export async function POST(req: NextRequest) {
   }
   
   try {
-    // ИСПОЛЬЗУЕМ ОТНОСИТЕЛЬНЫЙ ПУТЬ для Cloudflare Workers
-    const res = await fetch(new URL('/api/parse-yclients', req.url), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ syncAll: true }),
-    });
+    console.log('🔄 Starting sync-all...');
     
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error('❌ Parse error response:', errorText);
-      throw new Error(errorText || 'Parser failed');
-    }
+    // ВЫЗЫВАЕМ ЛОГИКУ НАПРЯМУЮ, БЕЗ HTTP!
+    const result = await runParseYclients(undefined, true);
     
-    const data = await res.json();
     return NextResponse.json({
-      success: true,
-      data: data.data,
-      summary: data.summary,
-      timestamp: data.timestamp,
+      success: result.success,
+      data: result.data,
+      summary: result.summary,
+      timestamp: result.timestamp,
     });
   } catch (error) {
-    console.error('❌ Sync all error:', error);
+    console.error(' Sync all error:', error);
     return NextResponse.json(
       { 
         error: 'Failed to sync statuses', 
