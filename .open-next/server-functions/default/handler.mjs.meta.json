@@ -4062,7 +4062,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-      "bytes": 9070,
+      "bytes": 9062,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -8517,7 +8517,7 @@
           "bytesInOutput": 9831
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-          "bytesInOutput": 9544
+          "bytesInOutput": 9528
         },
         ".open-next/server-functions/default/.next/server/app/api/parse-yclients-html/route.js": {
           "bytesInOutput": 1423308
@@ -8751,7 +8751,7 @@
           "bytesInOutput": 63297
         }
       },
-      "bytes": 4825552
+      "bytes": 4825536
     }
   }
 }
