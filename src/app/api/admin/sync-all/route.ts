@@ -17,7 +17,9 @@ export async function POST(req: NextRequest) {
   
   try {
     // На Cloudflare Workers используем относительный URL
-    const baseUrl = req.headers.get('origin') || 'https://barber-shop.a-kane18903.workers.dev';
+    const host = req.headers.get('host') || 'barber-shop.a-kane18903.workers.dev';
+    const protocol = 'https';
+    const baseUrl = `${protocol}://${host}`;
     const res = await fetch(`${baseUrl}/api/parse-yclients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

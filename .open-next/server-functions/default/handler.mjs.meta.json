@@ -3312,7 +3312,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
-      "bytes": 119210,
+      "bytes": 119208,
       "imports": [
         {
           "path": "path",
@@ -4010,8 +4010,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-      "bytes": 9062,
+    ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route.js": {
+      "bytes": 9427,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4061,8 +4061,8 @@
       ],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route.js": {
-      "bytes": 9427,
+    ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
+      "bytes": 9062,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -4467,7 +4467,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/admin/sync-all/route.js": {
-      "bytes": 7401,
+      "bytes": 7408,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -5999,14 +5999,14 @@
           "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\change-password\\route.js"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js",
-          "kind": "require-call",
-          "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\parsed-statuses\\route.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route.js",
           "kind": "require-call",
           "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\override-status\\route.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js",
+          "kind": "require-call",
+          "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\parsed-statuses\\route.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/parse-yclients-html/route.js",
@@ -8427,7 +8427,7 @@
           "bytesInOutput": 8545
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/load-manifest.external.js": {
-          "bytesInOutput": 100034
+          "bytesInOutput": 100032
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/app-render/action-async-storage-instance.js": {
           "bytesInOutput": 501
@@ -8513,11 +8513,11 @@
         ".open-next/server-functions/default/.next/server/app/api/admin/change-password/route.js": {
           "bytesInOutput": 10716
         },
-        ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
-          "bytesInOutput": 9528
-        },
         ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route.js": {
           "bytesInOutput": 9831
+        },
+        ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route.js": {
+          "bytesInOutput": 9528
         },
         ".open-next/server-functions/default/.next/server/app/api/parse-yclients-html/route.js": {
           "bytesInOutput": 1423308
@@ -8532,7 +8532,7 @@
           "bytesInOutput": 10526
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/sync-all/route.js": {
-          "bytesInOutput": 7505
+          "bytesInOutput": 7514
         },
         ".open-next/server-functions/default/.next/server/app/api/parse-yclients/route.js": {
           "bytesInOutput": 13986
@@ -8751,7 +8751,7 @@
           "bytesInOutput": 63297
         }
       },
-      "bytes": 4825544
+      "bytes": 4825551
     }
   }
 }
