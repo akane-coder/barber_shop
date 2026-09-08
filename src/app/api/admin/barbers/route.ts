@@ -9,11 +9,21 @@ function getSession(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  if (!getSession(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const barbers = await getData<Barber[]>('barbers_data');
     const safeBarbers = Array.isArray(barbers) ? barbers : [];
-    return NextResponse.json(safeBarbers);
+    
+    // Проверяем авторизацию
+    const session = getSession(req);
+    
+    if (session) {
+      // Авторизованный пользователь (админка) видит ВСЕХ мастеров
+      return NextResponse.json(safeBarbers);
+    } else {
+      // Неавторизованный (главная страница) видит ТОЛЬКО активных
+      const activeBarbers = safeBarbers.filter((b) => b.is_active);
+      return NextResponse.json(activeBarbers);
+    }
   } catch (error) {
     console.error('❌ Ошибка чтения мастеров:', error);
     return NextResponse.json({ error: 'Ошибка чтения данных' }, { status: 500 });

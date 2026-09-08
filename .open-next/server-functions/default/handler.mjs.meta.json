@@ -4579,7 +4579,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/api/admin/barbers/route.js": {
-      "bytes": 10122,
+      "bytes": 10120,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -5890,7 +5890,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/app/page.js": {
-      "bytes": 41272,
+      "bytes": 41036,
       "imports": [
         {
           "path": ".open-next/server-functions/default/node_modules/next/dist/shared/lib/router/utils/app-paths.js",
@@ -8551,7 +8551,7 @@
           "bytesInOutput": 7452
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/barbers/route.js": {
-          "bytesInOutput": 10950
+          "bytesInOutput": 10953
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/upload/route.js": {
           "bytesInOutput": 12478
@@ -8647,7 +8647,7 @@
           "bytesInOutput": 3581
         },
         ".open-next/server-functions/default/.next/server/app/page.js": {
-          "bytesInOutput": 51734
+          "bytesInOutput": 51538
         },
         ".open-next/server-functions/default/node_modules/next/dist/server/require.js": {
           "bytesInOutput": 14975
@@ -8764,7 +8764,7 @@
           "bytesInOutput": 62873
         }
       },
-      "bytes": 4823413
+      "bytes": 4823220
     }
   }
 }
