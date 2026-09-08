@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
+import { getData } from '@/lib/kv';
 
 const ORGANIZATION_ID = 262700;
 const YCLIENTS_BASE_URL = 'https://platform.yclients.com';
@@ -162,15 +163,17 @@ export async function POST(req: NextRequest) {
 
     let idsToSync: number[] = staffIds || [];
 
-    if (syncAll) {
+        if (syncAll) {
       try {
-        const barbersPath = path.join(process.cwd(), 'data', 'barbers.json');
-        const barbersData = await fs.readFile(barbersPath, 'utf-8');
-        const barbers = JSON.parse(barbersData);
-        idsToSync = barbers
+        // ЧИТАЕМ ИЗ KV, А НЕ ИЗ ФАЙЛА, ТАК КАК АДМИНКА СОХРАНЯЕТ ТУДА
+        const barbers = await getData<any[]>('barbers_data');
+        const safeBarbers = Array.isArray(barbers) ? barbers : [];
+        
+        idsToSync = safeBarbers
           .filter((b: any) => b.is_active && b.yclients_staff_id)
           .map((b: any) => b.yclients_staff_id);
-        console.log(` Syncing ${idsToSync.length} active masters:`, idsToSync);
+          
+        console.log(`🔄 Syncing ${idsToSync.length} active masters from KV:`, idsToSync);
       } catch (err) {
         console.error('❌ Error loading barbers for sync:', err);
       }

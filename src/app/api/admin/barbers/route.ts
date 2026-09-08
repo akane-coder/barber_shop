@@ -11,9 +11,12 @@ function getSession(req: NextRequest) {
 export async function GET(req: NextRequest) {
   if (!getSession(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
-    const barbers = (await getData<Barber[]>('barbers_data')) || [];
-    return NextResponse.json(barbers);
+    const barbers = await getData<Barber[]>('barbers_data');
+    // Гарантируем, что возвращаем массив, даже если в KV лежит что-то сломанное
+    const safeBarbers = Array.isArray(barbers) ? barbers : [];
+    return NextResponse.json(safeBarbers);
   } catch (error) {
+    console.error('❌ Ошибка чтения мастеров:', error);
     return NextResponse.json({ error: 'Ошибка чтения данных' }, { status: 500 });
   }
 }
@@ -22,16 +25,28 @@ export async function POST(req: NextRequest) {
   if (!getSession(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const barber: Barber = await req.json();
-    const currentBarbers = (await getData<Barber[]>('barbers_data')) || [];
+    
+    // НАДЕЖНОЕ ПОЛУЧЕНИЕ ДАННЫХ: гарантируем, что это массив
+    let currentBarbers = await getData<Barber[]>('barbers_data');
+    if (!Array.isArray(currentBarbers)) {
+      console.warn('⚠️ barbers_data в KV поврежден или не является массивом. Безопасный сброс в [].');
+      currentBarbers = [];
+    }
     
     const index = currentBarbers.findIndex(b => b.id === barber.id);
-    if (index !== -1) currentBarbers[index] = barber;
-    else currentBarbers.push(barber);
+    if (index !== -1) {
+      currentBarbers[index] = barber;
+    } else {
+      currentBarbers.push(barber);
+    }
     
     await setData('barbers_data', currentBarbers);
     return NextResponse.json({ success: true, data: currentBarbers });
   } catch (error) {
-    return NextResponse.json({ error: 'Ошибка сохранения данных' }, { status: 500 });
+    console.error('❌ Ошибка сохранения мастера:', error);
+    return NextResponse.json({ 
+      error: 'Ошибка сохранения данных: ' + (error instanceof Error ? error.message : 'Неизвестная ошибка') 
+    }, { status: 500 });
   }
 }
 
@@ -39,12 +54,17 @@ export async function DELETE(req: NextRequest) {
   if (!getSession(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const { id } = await req.json();
-    const currentBarbers = (await getData<Barber[]>('barbers_data')) || [];
-    const filtered = currentBarbers.filter(b => b.id !== id);
+    let currentBarbers = await getData<Barber[]>('barbers_data');
     
-    await setData('barbers_data', filtered)
+    if (!Array.isArray(currentBarbers)) {
+      currentBarbers = [];
+    }
+    
+    const filtered = currentBarbers.filter(b => b.id !== id);
+    await setData('barbers_data', filtered);
     return NextResponse.json({ success: true, data: filtered });
   } catch (error) {
+    console.error('❌ Ошибка удаления:', error);
     return NextResponse.json({ error: 'Ошибка удаления' }, { status: 500 });
   }
 }

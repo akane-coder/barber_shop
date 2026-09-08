@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Barber, MasterLoadStatus, PortfolioItem } from '@/types';
+import { Barber, MasterLoadStatus, PortfolioItem, DEFAULT_SERVICES, DEFAULT_SPECIALIZATIONS } from '@/types';
 
 const YCLIENTS_COMPANY_ID = 262700;
 
@@ -37,6 +37,7 @@ export default function BarberForm({ initialData, onSubmit }: BarberFormProps) {
     services: initialData?.services || [],
     rating: initialData?.rating || 0,
     reviewsCount: initialData?.reviewsCount || 0,
+    manual_status: initialData?.manual_status || null,
   });
 
   // Функция синхронизации с YClients
@@ -313,7 +314,7 @@ export default function BarberForm({ initialData, onSubmit }: BarberFormProps) {
         />
       </div>
 
-      {/* Специализации */}
+            {/* Специализации */}
       <div>
         <label className="block text-sm mb-1 text-gray-400">Специализации (теги)</label>
         <div className="flex gap-2 mb-2">
@@ -322,37 +323,29 @@ export default function BarberForm({ initialData, onSubmit }: BarberFormProps) {
             value={specInput}
             onChange={e => setSpecInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddSpec())}
+            list="specs-list" // <-- ДОБАВИТЬ ЭТО
             className="flex-1 p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 outline-none"
             placeholder="Например: Фейды"
           />
-          <button
-            type="button"
-            onClick={handleAddSpec}
-            className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
-          >
-            +
-          </button>
+          <button type="button" onClick={handleAddSpec} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded">+</button>
         </div>
+        {/* <-- ДОБАВИТЬ ЭТОТ БЛОК --> */}
+        <datalist id="specs-list">
+          {DEFAULT_SPECIALIZATIONS.map(spec => <option key={spec} value={spec} />)}
+          {formData.specializations.filter(s => !DEFAULT_SPECIALIZATIONS.includes(s)).map(spec => <option key={spec} value={spec} />)}
+        </datalist>
+        
         <div className="flex flex-wrap gap-2">
           {formData.specializations.map(spec => (
-            <span
-              key={spec}
-              className="bg-blue-900 text-blue-200 px-2 py-1 rounded text-sm flex items-center gap-2"
-            >
+            <span key={spec} className="bg-blue-900 text-blue-200 px-2 py-1 rounded text-sm flex items-center gap-2">
               {spec}
-              <button
-                type="button"
-                onClick={() => handleRemoveSpec(spec)}
-                className="hover:text-white"
-              >
-                ×
-              </button>
+              <button type="button" onClick={() => handleRemoveSpec(spec)} className="hover:text-white">×</button>
             </span>
           ))}
         </div>
       </div>
 
-      {/* Услуги */}
+            {/* Услуги */}
       <div>
         <label className="block text-sm mb-1 text-gray-400">Услуги, которые выполняет</label>
         <div className="flex gap-2 mb-2">
@@ -361,31 +354,23 @@ export default function BarberForm({ initialData, onSubmit }: BarberFormProps) {
             value={serviceInput}
             onChange={e => setServiceInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddService())}
+            list="services-list" // <-- ДОБАВИТЬ ЭТО
             className="flex-1 p-2 rounded bg-gray-700 border border-gray-600 focus:border-blue-500 outline-none"
             placeholder="Например: Мужская стрижка"
           />
-          <button
-            type="button"
-            onClick={handleAddService}
-            className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded"
-          >
-            +
-          </button>
+          <button type="button" onClick={handleAddService} className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded">+</button>
         </div>
+        {/* <-- ДОБАВИТЬ ЭТОТ БЛОК --> */}
+        <datalist id="services-list">
+          {DEFAULT_SERVICES.map(service => <option key={service} value={service} />)}
+          {formData.services.filter(s => !DEFAULT_SERVICES.includes(s)).map(service => <option key={service} value={service} />)}
+        </datalist>
+
         <div className="flex flex-wrap gap-2">
           {formData.services.map((service, idx) => (
-            <span
-              key={idx}
-              className="bg-gray-700 text-gray-200 px-2 py-1 rounded text-sm flex items-center gap-2"
-            >
+            <span key={idx} className="bg-gray-700 text-gray-200 px-2 py-1 rounded text-sm flex items-center gap-2">
               {service}
-              <button
-                type="button"
-                onClick={() => handleRemoveService(service)}
-                className="hover:text-white"
-              >
-                ×
-              </button>
+              <button type="button" onClick={() => handleRemoveService(service)} className="hover:text-white">×</button>
             </span>
           ))}
         </div>
