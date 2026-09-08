@@ -12,7 +12,6 @@ export async function GET(req: NextRequest) {
   if (!getSession(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   try {
     const barbers = await getData<Barber[]>('barbers_data');
-    // Гарантируем, что возвращаем массив, даже если в KV лежит что-то сломанное
     const safeBarbers = Array.isArray(barbers) ? barbers : [];
     return NextResponse.json(safeBarbers);
   } catch (error) {
@@ -26,10 +25,9 @@ export async function POST(req: NextRequest) {
   try {
     const barber: Barber = await req.json();
     
-    // НАДЕЖНОЕ ПОЛУЧЕНИЕ ДАННЫХ: гарантируем, что это массив
     let currentBarbers = await getData<Barber[]>('barbers_data');
     if (!Array.isArray(currentBarbers)) {
-      console.warn('⚠️ barbers_data в KV поврежден или не является массивом. Безопасный сброс в [].');
+      console.warn('⚠️ barbers_data не массив, создаём новый');
       currentBarbers = [];
     }
     
@@ -40,13 +38,11 @@ export async function POST(req: NextRequest) {
       currentBarbers.push(barber);
     }
     
-    await setData('barbers_data', currentBarbers);
+    await setData('barbers_data', currentBarbers); // ✅ ПРАВИЛЬНО!
     return NextResponse.json({ success: true, data: currentBarbers });
   } catch (error) {
-    console.error('❌ Ошибка сохранения мастера:', error);
-    return NextResponse.json({ 
-      error: 'Ошибка сохранения данных: ' + (error instanceof Error ? error.message : 'Неизвестная ошибка') 
-    }, { status: 500 });
+    console.error(' Ошибка сохранения:', error);
+    return NextResponse.json({ error: 'Ошибка сохранения данных' }, { status: 500 });
   }
 }
 
@@ -61,7 +57,7 @@ export async function DELETE(req: NextRequest) {
     }
     
     const filtered = currentBarbers.filter(b => b.id !== id);
-    await setData('barbers_data', filtered);
+    await setData('barbers_data', filtered); // ✅ ПРАВИЛЬНО!
     return NextResponse.json({ success: true, data: filtered });
   } catch (error) {
     console.error('❌ Ошибка удаления:', error);
