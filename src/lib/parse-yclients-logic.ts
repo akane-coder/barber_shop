@@ -64,144 +64,122 @@ async function fetchSlotsForDate(staffId: number, date: string): Promise<TimeSlo
   }
 }
 
-// Вспомогательная функция для получения даты в формате YYYY-MM-DD в часовом поясе Минска
-function getMinskDate(offsetDays: number = 0): string {
-const now = new Date();
-// Получаем UTC время
-const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
-// Добавляем смещение Минска (UTC+3)
-const minskTime = new Date(utcTime + 3 * 60 * 60 * 1000);
-// Добавляем дни
-minskTime.setDate(minskTime.getDate() + offsetDays);
-// Форматируем в YYYY-MM-DD
-const year = minskTime.getFullYear();
-const month = String(minskTime.getMonth() + 1).padStart(2, '0');
-const day = String(minskTime.getDate()).padStart(2, '0');
-return `${year}-${month}-${day}`;
-}
-
 async function fetchMasterSlotsMultiDay(staffId: number, daysCount: number = 4): Promise<{ slots: TimeSlot[]; firstAvailableDate: string | null }> {
-const allSlots: TimeSlot[] = [];
-let firstAvailableDate: string | null = null;
-
-console.log(`\
-📅 Начинаем запрос слотов для staff ${staffId}`);
-console.log(`🕐 Текущее время UTC: ${new Date().toISOString()}`);
-console.log(`🕐 Текущее время Минска: ${getMinskDate(0)} (сегодня)`);
-
-for (let i = 0; i < daysCount; i++) {
-const dateStr = getMinskDate(i);
-console.log(`📅 Запрашиваем слоты на ${dateStr} (день +${i})`);
-
-const daySlots = await fetchSlotsForDate(staffId, dateStr);
-const bookableSlots = daySlots.filter(s => s.is_bookable);
-
-console.log(`  → Найдено ${daySlots.length} слотов, ${bookableSlots.length} доступны`);
-
-if (bookableSlots.length > 0 && !firstAvailableDate) {
-firstAvailableDate = dateStr;
-console.log(`  ✅ Первое доступное время: ${dateStr}`);
-}
-
-allSlots.push(...daySlots);
-}
-
-return { slots: allSlots, firstAvailableDate };
+  const allSlots: TimeSlot[] = [];
+  let firstAvailableDate: string | null = null;
+  
+  // ✅ ИСПОЛЬЗУЕМ ВРЕМЯ МИНСКА ВМЕСТО UTC
+  const now = new Date();
+  const minskTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Minsk' }));
+  
+  for (let i = 0; i < daysCount; i++) {
+    const date = new Date(minskTime);
+    date.setDate(date.getDate() + i);
+    
+    // ✅ ФОРМАТИРУЕМ ДАТУ В МИНСКОМ ВРЕМЕНИ
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
+    const daySlots = await fetchSlotsForDate(staffId, dateStr);
+    const bookableSlots = daySlots.filter(s => s.is_bookable);
+    
+    if (bookableSlots.length > 0 && !firstAvailableDate) {
+      firstAvailableDate = dateStr;
+    }
+    
+    allSlots.push(...daySlots);
+  }
+  
+  return { slots: allSlots, firstAvailableDate };
 }
 
 function calculateMasterStatus(slots: TimeSlot[]): string {
-// ✅ ПРАВИЛЬНОЕ ПОЛУЧЕНИЕ ВРЕМЕНИ МИНСКА
-const now = new Date();
-const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
-const minskTime = new Date(utcTime + 3 * 60 * 60 * 1000);
-
-console.log('\
-=== calculateMasterStatus ===');
-console.log(`🕐 Время Минска: ${minskTime.toISOString()}`);
-console.log(`📅 Сегодня: ${getMinskDate(0)}`);
-console.log(`📅 Завтра: ${getMinskDate(1)}`);
-console.log(`📅 Послезавтра: ${getMinskDate(2)}`);
-
-const nowPlus2Hours = new Date(minskTime.getTime() + 2 * 60 * 60 * 1000);
-
-// Границы дней в Минске
-const todayStart = new Date(minskTime);
-todayStart.setHours(0, 0, 0, 0);
-const todayEnd = new Date(minskTime);
-todayEnd.setHours(23, 59, 59, 999);
-
-const tomorrowStart = new Date(todayEnd);
-tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-tomorrowStart.setHours(0, 0, 0, 0);
-const tomorrowEnd = new Date(tomorrowStart);
-tomorrowEnd.setHours(23, 59, 59, 999);
-
-const in2DaysStart = new Date(tomorrowEnd);
-in2DaysStart.setDate(in2DaysStart.getDate() + 1);
-in2DaysStart.setHours(0, 0, 0, 0);
-const in2DaysEnd = new Date(in2DaysStart);
-in2DaysEnd.setHours(23, 59, 59, 999);
-
-const in3DaysStart = new Date(in2DaysEnd);
-in3DaysStart.setDate(in3DaysStart.getDate() + 1);
-in3DaysStart.setHours(0, 0, 0, 0);
-const in4DaysEnd = new Date(in3DaysStart);
-in4DaysEnd.setDate(in4DaysEnd.getDate() + 1);
-in4DaysEnd.setHours(23, 59, 59, 999);
-
-let hasSlotToday = false;
-let hasSlotTomorrow = false;
-let hasSlotIn2Days = false;
-let hasSlotIn3_4Days = false;
-
-console.log(`\
-📊 Всего слотов для анализа: ${slots.length}`);
-
-for (const slot of slots) {
-if (!slot.is_bookable) continue;
-
-const slotTime = new Date(slot.datetime);
-console.log(`  🔍 Слот: ${slot.datetime} | Bookable: ${slot.is_bookable}`);
-
-// IMMEDIATE - в ближайшие 2 часа
-if (slotTime >= minskTime && slotTime <= nowPlus2Hours) {
-console.log(`    ✅ IMMEDIATE (в ближайшие 2 часа)`);
-return 'IMMEDIATE';
-}
-
-// Сегодня
-if (slotTime >= todayStart && slotTime <= todayEnd) {
-hasSlotToday = true;
-console.log(`    📌 TODAY`);
-}
-// Завтра
-else if (slotTime >= tomorrowStart && slotTime <= tomorrowEnd) {
-hasSlotTomorrow = true;
-console.log(`    📌 TOMORROW`);
-}
-// Послезавтра
-else if (slotTime >= in2DaysStart && slotTime <= in2DaysEnd) {
-hasSlotIn2Days = true;
-console.log(`     IN_2_DAYS`);
-}
-// 3-4 дня
-else if (slotTime >= in3DaysStart && slotTime <= in4DaysEnd) {
-hasSlotIn3_4Days = true;
-console.log(`    📌 IN_3_4_DAYS`);
-}
-else {
-console.log(`    ⚪ Вне диапазона (дальше 4 дней)`);
-}
-}
-
-console.log(`\
-📊 Результаты: today=${hasSlotToday}, tomorrow=${hasSlotTomorrow}, in2Days=${hasSlotIn2Days}, in3_4Days=${hasSlotIn3_4Days}`);
-
-if (hasSlotToday) return 'TODAY';
-if (hasSlotTomorrow) return 'TOMORROW';
-if (hasSlotIn2Days) return 'IN_2_DAYS';
-if (hasSlotIn3_4Days) return 'IN_3_4_DAYS';
-return 'FULLY_BOOKED';
+  // ✅ ПРАВИЛЬНОЕ ПОЛУЧЕНИЕ ВРЕМЕНИ МИНСКА (UTC+3)
+  const now = new Date();
+  const minskOffsetMs = 3 * 60 * 60 * 1000; // UTC+3 в миллисекундах
+  const utcMs = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+  const minskNowMs = utcMs + minskOffsetMs;
+  
+  const nowPlus2HoursMs = minskNowMs + 2 * 60 * 60 * 1000;
+  
+  // ✅ ВЫЧИСЛЯЕМ НАЧАЛО ДНЯ В МИНСКЕ (работает на Cloudflare UTC)
+  // Берём timestamp Минска, обнуляем время до начала дня, потом конвертируем обратно в UTC timestamp
+  const minskDate = new Date(minskNowMs);
+  const dayStartMinskMs = Date.UTC(
+    minskDate.getUTCFullYear(),
+    minskDate.getUTCMonth(),
+    minskDate.getUTCDate(),
+    0, 0, 0, 0
+  );
+  
+  // Сегодня: от начала дня в Минске до +24 часа
+  const todayStartMs = dayStartMinskMs;
+  const todayEndMs = dayStartMinskMs + 24 * 60 * 60 * 1000 - 1;
+  
+  // Завтра
+  const tomorrowStartMs = dayStartMinskMs + 24 * 60 * 60 * 1000;
+  const tomorrowEndMs = tomorrowStartMs + 24 * 60 * 60 * 1000 - 1;
+  
+  // Послезавтра
+  const in2DaysStartMs = tomorrowStartMs + 24 * 60 * 60 * 1000;
+  const in2DaysEndMs = in2DaysStartMs + 24 * 60 * 60 * 1000 - 1;
+  
+  // 3-4 дня
+  const in3DaysStartMs = in2DaysStartMs + 24 * 60 * 60 * 1000;
+  const in4DaysEndMs = in3DaysStartMs + 2 * 24 * 60 * 60 * 1000 - 1;
+  
+  console.log('🕐 Minsk now (ms):', minskNowMs, '->', new Date(minskNowMs).toISOString());
+  console.log('📅 Today:', new Date(todayStartMs).toISOString(), '-', new Date(todayEndMs).toISOString());
+  console.log('📅 Tomorrow:', new Date(tomorrowStartMs).toISOString(), '-', new Date(tomorrowEndMs).toISOString());
+  console.log('📅 In 2 days:', new Date(in2DaysStartMs).toISOString(), '-', new Date(in2DaysEndMs).toISOString());
+  
+  let hasSlotToday = false;
+  let hasSlotTomorrow = false;
+  let hasSlotIn2Days = false;
+  let hasSlotIn3_4Days = false;
+  
+  for (const slot of slots) {
+    if (!slot.is_bookable) continue;
+    
+    // ✅ ПАРСИМ СЛОТ С УЧЁТОМ TIMEZONE (datetime уже содержит +03:00)
+    const slotTimeMs = new Date(slot.datetime).getTime();
+    
+    console.log(`🔍 Slot: ${slot.datetime} -> ${new Date(slotTimeMs).toISOString()} (ms: ${slotTimeMs})`);
+    
+    // Если слот в ближайшие 2 часа от текущего момента в Минске
+    if (slotTimeMs >= minskNowMs && slotTimeMs <= nowPlus2HoursMs) {
+      console.log('✅ IMMEDIATE');
+      return 'IMMEDIATE';
+    }
+    // Сегодня
+    if (slotTimeMs >= todayStartMs && slotTimeMs <= todayEndMs) {
+      hasSlotToday = true;
+      console.log('📅 TODAY slot found');
+    }
+    // Завтра
+    if (slotTimeMs >= tomorrowStartMs && slotTimeMs <= tomorrowEndMs) {
+      hasSlotTomorrow = true;
+      console.log('📅 TOMORROW slot found');
+    }
+    // Послезавтра
+    if (slotTimeMs >= in2DaysStartMs && slotTimeMs <= in2DaysEndMs) {
+      hasSlotIn2Days = true;
+      console.log('📅 IN_2_DAYS slot found');
+    }
+    // 3-4 дня
+    if (slotTimeMs >= in3DaysStartMs && slotTimeMs <= in4DaysEndMs) {
+      hasSlotIn3_4Days = true;
+      console.log('📅 IN_3_4_DAYS slot found');
+    }
+  }
+  
+  if (hasSlotToday) return 'TODAY';
+  if (hasSlotTomorrow) return 'TOMORROW';
+  if (hasSlotIn2Days) return 'IN_2_DAYS';
+  if (hasSlotIn3_4Days) return 'IN_3_4_DAYS';
+  return 'FULLY_BOOKED';
 }
 
 // ГЛАВНАЯ ФУНКЦИЯ - вызывается напрямую, без HTTP

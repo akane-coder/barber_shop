@@ -22,6 +22,13 @@
       "static/chunks/main-app-290572149fe5c423.js",
       "static/chunks/app/api/admin/change-password/route-7c5ebe2f6c18e950.js"
     ],
+    "/api/admin/barbers/route": [
+      "static/chunks/webpack-87a4096ed2b4d747.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-37e0f0325134c4d7.js",
+      "static/chunks/main-app-290572149fe5c423.js",
+      "static/chunks/app/api/admin/barbers/route-7c5ebe2f6c18e950.js"
+    ],
     "/api/admin/login/route": [
       "static/chunks/webpack-87a4096ed2b4d747.js",
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
@@ -35,13 +42,6 @@
       "static/chunks/255-37e0f0325134c4d7.js",
       "static/chunks/main-app-290572149fe5c423.js",
       "static/chunks/app/api/admin/me/route-7c5ebe2f6c18e950.js"
-    ],
-    "/api/admin/barbers/route": [
-      "static/chunks/webpack-87a4096ed2b4d747.js",
-      "static/chunks/4bd1b696-c023c6e3521b1417.js",
-      "static/chunks/255-37e0f0325134c4d7.js",
-      "static/chunks/main-app-290572149fe5c423.js",
-      "static/chunks/app/api/admin/barbers/route-7c5ebe2f6c18e950.js"
     ],
     "/api/admin/override-status/route": [
       "static/chunks/webpack-87a4096ed2b4d747.js",
@@ -113,6 +113,13 @@
       "static/chunks/main-app-290572149fe5c423.js",
       "static/chunks/app/admin/analytics/page-d68265d0714fe49c.js"
     ],
+    "/admin/barbers/new/page": [
+      "static/chunks/webpack-87a4096ed2b4d747.js",
+      "static/chunks/4bd1b696-c023c6e3521b1417.js",
+      "static/chunks/255-37e0f0325134c4d7.js",
+      "static/chunks/main-app-290572149fe5c423.js",
+      "static/chunks/app/admin/barbers/new/page-44a029eef1e1a96f.js"
+    ],
     "/admin/login/page": [
       "static/chunks/webpack-87a4096ed2b4d747.js",
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
@@ -134,12 +141,12 @@
       "static/chunks/main-app-290572149fe5c423.js",
       "static/chunks/app/admin/dashboard/page-f2d8d185287eaab4.js"
     ],
-    "/admin/barbers/new/page": [
+    "/admin/profile/page": [
       "static/chunks/webpack-87a4096ed2b4d747.js",
       "static/chunks/4bd1b696-c023c6e3521b1417.js",
       "static/chunks/255-37e0f0325134c4d7.js",
       "static/chunks/main-app-290572149fe5c423.js",
-      "static/chunks/app/admin/barbers/new/page-44a029eef1e1a96f.js"
+      "static/chunks/app/admin/profile/page-c30e9d604e2a7040.js"
     ],
     "/admin/page": [
       "static/chunks/webpack-87a4096ed2b4d747.js",
@@ -147,13 +154,6 @@
       "static/chunks/255-37e0f0325134c4d7.js",
       "static/chunks/main-app-290572149fe5c423.js",
       "static/chunks/app/admin/page-5cb2e8e403bb1b0f.js"
-    ],
-    "/admin/profile/page": [
-      "static/chunks/webpack-87a4096ed2b4d747.js",
-      "static/chunks/4bd1b696-c023c6e3521b1417.js",
-      "static/chunks/255-37e0f0325134c4d7.js",
-      "static/chunks/main-app-290572149fe5c423.js",
-      "static/chunks/app/admin/profile/page-c30e9d604e2a7040.js"
     ],
     "/admin/users/page": [
       "static/chunks/webpack-87a4096ed2b4d747.js",

@@ -3246,12 +3246,12 @@
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route_client-reference-manifest.js": {
       "bytes": 9452,
       "imports": [],
       "format": "cjs"
     },
-    ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route_client-reference-manifest.js": {
+    ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route_client-reference-manifest.js": {
       "bytes": 9452,
       "imports": [],
       "format": "cjs"
@@ -3335,14 +3335,14 @@
           "original": "../shared/lib/deep-freeze"
         },
         {
-          "path": ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route_client-reference-manifest.js",
-          "kind": "require-call",
-          "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\override-status\\route_client-reference-manifest.js"
-        },
-        {
           "path": ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route_client-reference-manifest.js",
           "kind": "require-call",
           "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\parsed-statuses\\route_client-reference-manifest.js"
+        },
+        {
+          "path": ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route_client-reference-manifest.js",
+          "kind": "require-call",
+          "original": "D:\\barber_shop\\barbershop-admin\\.open-next\\server-functions\\default\\.next\\server\\app\\api\\admin\\override-status\\route_client-reference-manifest.js"
         },
         {
           "path": ".open-next/server-functions/default/.next/server/app/api/admin/change-password/route_client-reference-manifest.js",
@@ -3908,7 +3908,7 @@
       "format": "cjs"
     },
     ".open-next/server-functions/default/.next/server/chunks/610.js": {
-      "bytes": 7675,
+      "bytes": 6772,
       "imports": [],
       "format": "cjs"
     },
@@ -8397,10 +8397,10 @@
         ".open-next/server-functions/default/node_modules/next/dist/shared/lib/deep-freeze.js": {
           "bytesInOutput": 586
         },
-        ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route_client-reference-manifest.js": {
           "bytesInOutput": 8582
         },
-        ".open-next/server-functions/default/.next/server/app/api/admin/parsed-statuses/route_client-reference-manifest.js": {
+        ".open-next/server-functions/default/.next/server/app/api/admin/override-status/route_client-reference-manifest.js": {
           "bytesInOutput": 8583
         },
         ".open-next/server-functions/default/.next/server/app/api/admin/change-password/route_client-reference-manifest.js": {
@@ -8509,7 +8509,7 @@
           "bytesInOutput": 86680
         },
         ".open-next/server-functions/default/.next/server/chunks/610.js": {
-          "bytesInOutput": 9186
+          "bytesInOutput": 7255
         },
         ".open-next/server-functions/default/.next/server/chunks/611.js": {
           "bytesInOutput": 71912
@@ -8764,7 +8764,7 @@
           "bytesInOutput": 62873
         }
       },
-      "bytes": 4825102
+      "bytes": 4823171
     }
   }
 }
