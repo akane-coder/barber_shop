@@ -43,15 +43,14 @@ async function fetchSlotsForDate(staffId: number, date: string): Promise<TimeSlo
         },
       }),
     });
-
+    
     if (!response.ok) {
       console.warn(`⚠️ API error for staff ${staffId} on ${date}: ${response.status}`);
       return [];
     }
-
+    
     const rawData = await response.json();
     
-    // JSON:API формат: data[].attributes
     if (Array.isArray(rawData.data) && rawData.data.length > 0) {
       return rawData.data.map((item: any) => ({
         id: item.id,
@@ -60,7 +59,6 @@ async function fetchSlotsForDate(staffId: number, date: string): Promise<TimeSlo
         is_bookable: item.attributes?.is_bookable !== false,
       }));
     }
-    
     return [];
   } catch (error) {
     console.error(` Network error for staff ${staffId} on ${date}:`, error);
@@ -72,14 +70,12 @@ async function fetchSlotsForDate(staffId: number, date: string): Promise<TimeSlo
 async function fetchMasterSlotsMultiDay(staffId: number, daysCount: number = 4): Promise<{ slots: TimeSlot[]; firstAvailableDate: string | null }> {
   const allSlots: TimeSlot[] = [];
   let firstAvailableDate: string | null = null;
-  
   const today = new Date();
   
   for (let i = 0; i < daysCount; i++) {
     const date = new Date(today);
     date.setDate(date.getDate() + i);
     const dateStr = date.toISOString().split('T')[0];
-    
     const daySlots = await fetchSlotsForDate(staffId, dateStr);
     const bookableSlots = daySlots.filter(s => s.is_bookable);
     
@@ -97,58 +93,47 @@ function calculateMasterStatus(slots: TimeSlot[]): string {
   const now = new Date();
   const minskTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Minsk' }));
   const nowPlus2Hours = new Date(minskTime.getTime() + 2 * 60 * 60 * 1000);
-
   const todayEnd = new Date(minskTime);
   todayEnd.setHours(23, 59, 59, 999);
-
   const tomorrow = new Date(minskTime);
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
-
   const tomorrowEnd = new Date(tomorrow);
   tomorrowEnd.setHours(23, 59, 59, 999);
-
   const in2Days = new Date(tomorrow);
   in2Days.setDate(in2Days.getDate() + 1);
-
   const in3Days = new Date(in2Days);
   in3Days.setDate(in3Days.getDate() + 1);
-
   const in4Days = new Date(in3Days);
   in4Days.setDate(in4Days.getDate() + 1);
-
+  
   let hasSlotToday = false;
   let hasSlotTomorrow = false;
   let hasSlotIn2Days = false;
   let hasSlotIn3_4Days = false;
-
+  
   for (const slot of slots) {
     if (!slot.is_bookable) continue;
-
+    
     const slotTime = new Date(slot.datetime);
-
-    // 🟢 Свободен сейчас (в ближайшие 2 часа)
+    
     if (slotTime >= minskTime && slotTime <= nowPlus2Hours) {
       return 'IMMEDIATE';
     }
-    // 🟡 Есть сегодня
     if (slotTime >= minskTime && slotTime <= todayEnd) {
       hasSlotToday = true;
     }
-    // 🔵 Есть завтра
     if (slotTime >= tomorrow && slotTime <= tomorrowEnd) {
       hasSlotTomorrow = true;
     }
-    // 🔵 Есть послезавтра
     if (slotTime >= in2Days && slotTime < in3Days) {
       hasSlotIn2Days = true;
     }
-    // ⚪ Высокая загрузка (3-4 дня)
     if (slotTime >= in3Days && slotTime < in4Days) {
       hasSlotIn3_4Days = true;
     }
   }
-
+  
   if (hasSlotToday) return 'TODAY';
   if (hasSlotTomorrow) return 'TOMORROW';
   if (hasSlotIn2Days) return 'IN_2_DAYS';
@@ -160,32 +145,30 @@ export async function POST(req: NextRequest) {
   try {
     const { staffIds, syncAll } = await req.json();
     console.log('📥 Parse request:', { staffIds, syncAll });
-
+    
     let idsToSync: number[] = staffIds || [];
-
+    
     if (syncAll) {
       try {
         // ЧИТАЕМ ИЗ KV ВМЕСТО ФАЙЛА
         const barbers = await getData<Barber[]>('barbers_data');
         const safeBarbers = Array.isArray(barbers) ? barbers : [];
-        
         idsToSync = safeBarbers
           .filter((b) => b.is_active && b.yclients_staff_id)
           .map((b) => b.yclients_staff_id);
-          
         console.log(`🔄 Syncing ${idsToSync.length} active masters from KV:`, idsToSync);
       } catch (err) {
         console.error('❌ Error loading barbers for sync:', err);
       }
     }
-
+    
     if (!Array.isArray(idsToSync) || idsToSync.length === 0) {
       console.warn('⚠️ No staff IDs to sync');
       return NextResponse.json({ error: 'No staff IDs to sync' }, { status: 400 });
     }
-
+    
     console.log(`🔍 Parsing slots for next 4 days...`);
-
+    
     if (!API_TOKEN) {
       console.error('❌ No API token available');
       const results: ParsedResult[] = idsToSync.map(staffId => ({
@@ -198,22 +181,20 @@ export async function POST(req: NextRequest) {
       }));
       return NextResponse.json({ success: false, data: results });
     }
-
+    
     console.log('✅ Using token for API requests');
-
+    
     const results: ParsedResult[] = await Promise.all(
       idsToSync.map(async (staffId) => {
         console.log(`\n👤 Processing staff ${staffId}...`);
-
+        
         try {
-          // Запрашиваем слоты на 4 дня вперёд
           const { slots, firstAvailableDate } = await fetchMasterSlotsMultiDay(staffId, 4);
-          
           const bookableSlots = slots.filter(s => s.is_bookable);
           const status = bookableSlots.length > 0 ? calculateMasterStatus(slots) : 'FULLY_BOOKED';
-
+          
           console.log(`✅ Success: ${bookableSlots.length} bookable slots, first available: ${firstAvailableDate || 'none'}, status: ${status}`);
-
+          
           return {
             staff_id: staffId,
             status,
@@ -222,7 +203,7 @@ export async function POST(req: NextRequest) {
             source: 'api' as const,
           };
         } catch (error) {
-          console.error(` Error processing staff ${staffId}:`, error);
+          console.error(`❌ Error processing staff ${staffId}:`, error);
           return {
             staff_id: staffId,
             status: null,
@@ -234,7 +215,7 @@ export async function POST(req: NextRequest) {
         }
       })
     );
-
+    
     const cacheData = {
       statuses: results.reduce((acc, r) => {
         if (r.status) {
@@ -245,7 +226,7 @@ export async function POST(req: NextRequest) {
       timestamp: new Date().toISOString(),
       errors: results.filter(r => r.error).map(r => ({ staff_id: r.staff_id, error: r.error })),
     };
-
+    
     // СОХРАНЯЕМ КЭШ В KV ВМЕСТО ФАЙЛА
     try {
       await setData('parsed_statuses_cache', cacheData);
@@ -253,8 +234,9 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       console.error('❌ Error saving cache to KV:', err);
     }
-
+    
     console.log('\n✅ Sync completed!');
+    
     return NextResponse.json({
       success: true,
       data: results,
@@ -267,7 +249,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error('❌ Error in parse-yclients:', error);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: 'Internal server error',
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
@@ -279,7 +261,7 @@ export async function GET() {
     // ЧИТАЕМ КЭШ ИЗ KV ВМЕСТО ФАЙЛА
     const cacheData = await getData<any>('parsed_statuses_cache');
     const parsed = cacheData || { statuses: {}, timestamp: null, errors: [] };
-
+    
     return NextResponse.json({
       message: 'YClients Parser API',
       organization_id: ORGANIZATION_ID,
