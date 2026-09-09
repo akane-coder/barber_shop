@@ -88,20 +88,31 @@ export default function AnalyticsDashboard() {
         {/* График посещений */}
         <div className="bg-gray-800 p-6 rounded-lg mb-8">
           <h2 className="text-xl font-bold mb-4">Посещения по дням</h2>
-          <div className="flex items-end gap-2 h-48">
-            {Object.entries(stats.visitsByDay).map(([date, count]) => (
-              <div key={date} className="flex-1 flex flex-col items-center gap-2">
-                <div className="text-xs text-gray-400">{count}</div>
-                <div
-                  className="w-full bg-blue-600 rounded-t transition-all hover:bg-blue-500"
-                  style={{ height: `${(count / maxVisits) * 100}%` }}
-                />
-                <div className="text-xs text-gray-500">
-                  {new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })}
-                </div>
-              </div>
-            ))}
-          </div>
+          {Object.keys(stats.visitsByDay).length === 0 ? (
+            <p className="text-gray-500 text-center py-8">Нет данных за выбранный период</p>
+          ) : (
+            <div className="flex items-end gap-3 h-48 border-b border-gray-700 pb-2">
+              {Object.entries(stats.visitsByDay).map(([date, count]) => {
+                const heightPercent = (count / maxVisits) * 100;
+                return (
+                  <div key={date} className="flex-1 flex flex-col items-center justify-end h-full">
+                    {/* Число над столбиком */}
+                    <div className="text-xs text-gray-400 mb-1 font-medium">{count}</div>
+                    {/* Сам столбик */}
+                    <div
+                      className="w-full max-w-12 bg-blue-600 rounded-t transition-all hover:bg-blue-500 cursor-pointer"
+                      style={{ height: `${Math.max(heightPercent, 4)}%` }}
+                      title={`${date}: ${count} посещений`}
+                    />
+                    {/* Дата под столбиком */}
+                    <div className="text-xs text-gray-500 mt-2">
+                      {new Date(date).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Источники и устройства */}
